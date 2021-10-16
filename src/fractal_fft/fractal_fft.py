@@ -64,7 +64,7 @@ class FractalFFT:
         self.b = self.b - self.b[:, 0]
         self.c = self.c - self.c[:, 0]
 
-    def clear(self) -> None:
+    def clear(self) -> None:  # pragma: no cover
         """Clear internal cache memory."""
         self._cache.clear()
 
