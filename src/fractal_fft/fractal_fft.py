@@ -19,15 +19,14 @@ class FractalFFT:
 
         Args:
             Ainv: d x d matrix
-            b: K x d matrix, each column is a vector b_k
-            c: K x d matrix, each column is a vector c_j
+            b: d x K matrix, each column is a vector b_k
+            c: d x K matrix, each column is a vector c_j
         """
         # TODO: check Hadamard, invertible
         self._validate(Ainv, b, c)
         self.A = np.linalg.inv(Ainv)
-        self.b = b
-        self.c = c
-        self._normalize()
+        self.b = self.normalize(b)
+        self.c = self.normalize(c)
         self.K = b.shape[0]
         self._cache: Dict[Any, np.ndarray] = {}
 
@@ -40,15 +39,15 @@ class FractalFFT:
                 isinstance(x, np.ndarray) and len(x.shape) == 2 and x.dtype == np.int32
             )
 
-        if (
-            not is_integer_matrix(Ainv)
-            and is_integer_matrix(b)
-            and is_integer_matrix(c)
+        if not (
+            is_integer_matrix(Ainv) and is_integer_matrix(b) and is_integer_matrix(c)
         ):
             raise RuntimeError("Ainv, B, C must be integer matrices")
 
-        if not Ainv.shape[0] == Ainv.shape[1] == b.shape[1] == c.shape[1]:
-            raise RuntimeError("Ainv, B, C must be dxd, Kxd, Kxd respectively")
+        if (
+            not Ainv.shape[0] == Ainv.shape[1] == b.shape[0] == c.shape[0]
+        ) or not b.shape[1] == c.shape[1]:
+            raise RuntimeError("Ainv, B, C must be dxd, dxK, dxK respectively")
 
         try:
             A = np.linalg.inv(Ainv)
@@ -59,10 +58,10 @@ class FractalFFT:
         if not s[0] < 1:
             raise RuntimeError("A must have spectral norm smaller than 1")
 
-    def _normalize(self) -> None:
-        """Normalize to ensure b_0, c_0 are 0."""
-        self.b = self.b - self.b[:, 0]
-        self.c = self.c - self.c[:, 0]
+    @staticmethod
+    def normalize(x: np.ndarray) -> np.ndarray:
+        """Normalize a matrix by subtracting first column from all columns."""
+        return x - x[:, 0]  # type: ignore
 
     def clear(self) -> None:  # pragma: no cover
         """Clear internal cache memory."""
