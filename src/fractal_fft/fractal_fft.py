@@ -26,15 +26,16 @@ class FractalFFT:
         self.C = C
         self._normalize()
         self.K = B.shape[0]
-        self._initialize_cache()
+        self._cache = {}
 
     def _normalize(self):
         """Normalize to ensure b_0, c_0 are 0."""
         self.B = self.B - self.B[:, 0]
         self.C = self.C - self.C[:, 0]
 
-    def _initialize_cache(self):
-        self._cache = {}
+    def clear(self):
+        """Clear internal cache memory."""
+        self._cache.clear()
 
     def E(self, N, m):
         """Calculate matrix E."""
