@@ -51,24 +51,18 @@ Requirements
 Installation
 ------------
 
-You can install *Fractal Fft* via pip_ from PyPI_:
-
-.. code:: console
-
-   $ pip install fractal-fft
-
+* TODO
 
 Usage
 -----
 
-Please see the `Command-line Reference <Usage_>`_ for details.
+* TODO
 
 
 Contributing
 ------------
 
-Contributions are very welcome.
-To learn more, see the `Contributor Guide`_.
+* TODO
 
 
 License
