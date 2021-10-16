@@ -26,16 +26,25 @@ class FractalFFT:
         self.C = C
         self._normalize()
         self.K = B.shape[0]
+        self._initialize_cache()
 
     def _normalize(self):
         """Normalize to ensure b_0, c_0 are 0."""
         self.B = self.B - self.B[:, 0]
         self.C = self.C - self.C[:, 0]
 
+    def _initialize_cache(self):
+        self._cache = {}
+
     def E(self, N, m):
         """Calculate matrix E."""
-        # TODO: implement caching to reduce computation
-        return self._E(N, m)
+        key = ("E", N, m)
+        if key in self._cache:
+            return self._cache[key]
+        else:
+            E = self._E(N, m)
+            self._cache[key] = E
+            return E
 
     def _E(self, N, m):
         e = self.C.T @ (self.A ** N) @ self.B[:, m]
@@ -44,8 +53,13 @@ class FractalFFT:
 
     def D(self, N, m):
         """Calculate matrix D."""
-        # TODO: implement caching to reduce computation
-        return self._D(N, m)
+        key = ("D", N, m)
+        if key in self._cache:
+            return self._cache[key]
+        else:
+            D = self._D(N, m)
+            self._cache[key] = D
+            return D
 
     def _D(self, N, m):
         if m == 0:
@@ -58,8 +72,13 @@ class FractalFFT:
 
     def M(self, N):
         """Calculate matrix M."""
-        # TODO: implement caching to reduce computation
-        return self._M(N)
+        key = ("M", N)
+        if key in self._cache:
+            return self._cache[key]
+        else:
+            M = self._M(N)
+            self._cache[key] = M
+            return M
 
     def _M(self, N):
         if N == 1:
