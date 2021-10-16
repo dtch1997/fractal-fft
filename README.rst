@@ -56,14 +56,13 @@ Installation
 Usage
 -----
 
-Please see the `Command-line Reference <Usage_>`_ for details.
+* TODO
 
 
 Contributing
 ------------
 
-Contributions are very welcome.
-To learn more, see the `Contributor Guide`_.
+* TODO
 
 
 License
