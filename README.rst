@@ -60,7 +60,11 @@ Then, install requirements using `poetry`::
 Usage
 -----
 
-* TODO
+Run a simple example as follows::
+
+   poetry run fractal-fft
+
+This executes the code in :code:`src/fractal_fft/__main__.py`.
 
 
 Contributing
