@@ -1,11 +1,21 @@
 """Command-line interface."""
 import click
+import numpy as np
+
+from fractal_fft.fractal_fft import FractalFFT
 
 
 @click.command()
 @click.version_option()
 def main() -> None:
     """Fractal Fft."""
+    A = np.identity(2)
+    B = np.random.uniform(size=(2, 2))
+    C = np.random.uniform(size=(2, 2))
+    fractal_fft = FractalFFT(A, B, C)
+    print(fractal_fft.E(2, 1).shape)
+    print(fractal_fft.D(2, 1).shape)
+    print(fractal_fft.M(2))
 
 
 if __name__ == "__main__":

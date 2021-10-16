@@ -84,13 +84,3 @@ class FractalFFT:
                         M_1[row, col] * D_N_col_M_prev
                     )
             return M_N
-
-
-if __name__ == "__main__":
-    A = np.identity(2)
-    B = np.random.uniform(size=(2, 2))
-    C = np.random.uniform(size=(2, 2))
-    fractal_fft = FractalFFT(A, B, C)
-    print(fractal_fft.E(2, 1).shape)
-    print(fractal_fft.D(2, 1).shape)
-    print(fractal_fft.M(2))
