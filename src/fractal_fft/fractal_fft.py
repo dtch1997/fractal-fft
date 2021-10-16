@@ -11,27 +11,55 @@ class FractalFFT:
     Reference: https://arxiv.org/pdf/1607.03690.pdf
     """
 
-    def __init__(self, A: np.ndarray, B: np.ndarray, C: np.ndarray):
+    def __init__(self, Ainv: np.ndarray, b: np.ndarray, c: np.ndarray):
         """Initializes FractalFFT.
 
         Args:
-            A: d x d matrix
-            B: K x d matrix, each column is a vector
-            C: K x d matrix, each column is a vector
+            Ainv: d x d matrix
+            b: K x d matrix, each column is a vector b_k
+            c: K x d matrix, each column is a vector c_j
         """
-        # TODO: error handling
         # TODO: check Hadamard, invertible
-        self.A = A
-        self.B = B
-        self.C = C
+        self._validate(Ainv, b, c)
+        self.A = np.linalg.inv(Ainv)
+        self.b = b
+        self.c = c
         self._normalize()
-        self.K = B.shape[0]
+        self.K = b.shape[0]
         self._cache = {}
+
+    @staticmethod
+    def _validate(Ainv, b, c):
+        """Check that Ainv, B, C are valid matrices."""
+
+        def is_integer_matrix(x):
+            return (
+                isinstance(x, np.ndarray) and len(x.shape) == 2 and x.dtype == np.int32
+            )
+
+        if (
+            not is_integer_matrix(Ainv)
+            and is_integer_matrix(b)
+            and is_integer_matrix(c)
+        ):
+            raise RuntimeError("Ainv, B, C must be integer matrices")
+
+        if not Ainv.shape[0] == Ainv.shape[1] == b.shape[1] == c.shape[1]:
+            raise RuntimeError("Ainv, B, C must be dxd, Kxd, Kxd respectively")
+
+        try:
+            A = np.linalg.inv(Ainv)
+        except np.linalg.LinAlgError as e:
+            raise RuntimeError("Ainv must be invertible") from e
+
+        _, s, _ = np.linalg.svd(A)
+        if not s[0] < 1:
+            raise RuntimeError("A must have spectral norm smaller than 1")
 
     def _normalize(self):
         """Normalize to ensure b_0, c_0 are 0."""
-        self.B = self.B - self.B[:, 0]
-        self.C = self.C - self.C[:, 0]
+        self.b = self.b - self.b[:, 0]
+        self.c = self.c - self.c[:, 0]
 
     def clear(self):
         """Clear internal cache memory."""
@@ -48,7 +76,7 @@ class FractalFFT:
             return E
 
     def _E(self, N, m):
-        e = self.C.T @ (self.A ** N) @ self.B[:, m]
+        e = self.c.T @ (self.A ** N) @ self.b[:, m]
         e = np.stack([e] * self.K, axis=1)
         return np.exp(-TWO_PI * 1j * e)
 
@@ -83,7 +111,7 @@ class FractalFFT:
 
     def _M(self, N):
         if N == 1:
-            m = self.C.T @ self.A @ self.B
+            m = self.c.T @ self.A @ self.b
             return np.exp(TWO_PI * 1j * m)
         else:
             M_1 = self.M(1)
