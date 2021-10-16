@@ -1,0 +1,12 @@
+{
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Daniel Tan",
+  "development_status": "Development Status :: 1 - Planning",
+  "email": "dtch009@gmail.com",
+  "friendly_name": "Fractal Fft",
+  "github_user": "dtch1997",
+  "license": "MIT",
+  "package_name": "fractal_fft",
+  "project_name": "fractal-fft",
+  "version": "0.0.1"
+}
