@@ -51,7 +51,11 @@ Requirements
 Installation
 ------------
 
-* TODO
+It is recommended to create a fresh Python virtual environment, e.g. using `venv` or `conda`.
+
+Then, install requirements using `poetry`::
+
+   poetry install
 
 Usage
 -----
