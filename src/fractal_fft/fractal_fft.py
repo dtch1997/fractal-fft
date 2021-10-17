@@ -12,6 +12,15 @@ def normalize(x: np.ndarray) -> np.ndarray:
     return x - x[:, 0]  # type: ignore
 
 
+def is_invertible(x: np.ndarray) -> bool:
+    """Check whether a matrix is invertible."""
+    try:
+        _ = np.linalg.inv(x)
+        return True
+    except np.linalg.LinAlgError:
+        return False
+
+
 class FractalFFT:
     """Implementation of Fractal FFT algorithm.
 
@@ -23,17 +32,23 @@ class FractalFFT:
         """Initializes FractalFFT.
 
         Args:
-            Ainv: d x d matrix
-            b: d x K matrix, each column is a vector b_k
-            c: d x K matrix, each column is a vector c_j
+            Ainv: d x d matrix. Inverse of matrix A. Must be a 2D integer matrix
+            b: d x K matrix, each column is a vector b_k. Must be a 2D integer matrix
+            c: d x K matrix, each column is a vector c_j. Must be a 2D integer matrix
+
+        Raises:
+            RuntimeError: if arguments are invalid
         """
         # TODO: check Hadamard, invertible
         self._validate(Ainv, b, c)
         self.A = np.linalg.inv(Ainv)
+        self.B = Ainv.T
         self.b = normalize(b)
         self.c = normalize(c)
         self.K = b.shape[0]
         self._cache: Dict[Any, np.ndarray] = {}
+        if not is_invertible(self.M(1)):
+            raise RuntimeError("A, b, c must be such that M(1) is invertible")
 
     @staticmethod
     def _validate(Ainv: np.ndarray, b: np.ndarray, c: np.ndarray) -> None:
@@ -54,11 +69,10 @@ class FractalFFT:
         ) or not b.shape[1] == c.shape[1]:
             raise RuntimeError("Ainv, B, C must be dxd, dxK, dxK respectively")
 
-        try:
-            A = np.linalg.inv(Ainv)
-        except np.linalg.LinAlgError as e:
-            raise RuntimeError("Ainv must be invertible") from e
+        if not is_invertible(Ainv):
+            raise RuntimeError("Ainv must be invertible")
 
+        A = np.linalg.inv(Ainv)
         _, s, _ = np.linalg.svd(A)
         if not s[0] < 1:
             raise RuntimeError("A must have spectral norm smaller than 1")
