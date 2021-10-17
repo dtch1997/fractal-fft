@@ -106,11 +106,11 @@ class FractalFFT:
             return D
 
     def _D(self, N: int, m: int) -> np.ndarray:
-        if m == 0:
+        if N == 1:
+            return np.identity(1)
+        elif m == 0:
             # This is true because b_0 is always fixed to be 0
             return np.identity(self.K)
-        elif N == 1:
-            return np.identity(1)
         else:
             return np.kron(self.D(N - 1, m), self.E(N, m))  # type: ignore
 
