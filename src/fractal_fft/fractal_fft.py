@@ -7,6 +7,11 @@ import numpy as np
 TWO_PI = 2 * np.pi
 
 
+def normalize(x: np.ndarray) -> np.ndarray:
+    """Normalize a matrix by subtracting first column from all columns."""
+    return x - x[:, 0]  # type: ignore
+
+
 class FractalFFT:
     """Implementation of Fractal FFT algorithm.
 
@@ -25,8 +30,8 @@ class FractalFFT:
         # TODO: check Hadamard, invertible
         self._validate(Ainv, b, c)
         self.A = np.linalg.inv(Ainv)
-        self.b = self.normalize(b)
-        self.c = self.normalize(c)
+        self.b = normalize(b)
+        self.c = normalize(c)
         self.K = b.shape[0]
         self._cache: Dict[Any, np.ndarray] = {}
 
@@ -57,11 +62,6 @@ class FractalFFT:
         _, s, _ = np.linalg.svd(A)
         if not s[0] < 1:
             raise RuntimeError("A must have spectral norm smaller than 1")
-
-    @staticmethod
-    def normalize(x: np.ndarray) -> np.ndarray:
-        """Normalize a matrix by subtracting first column from all columns."""
-        return x - x[:, 0]  # type: ignore
 
     def clear(self) -> None:  # pragma: no cover
         """Clear internal cache memory."""
