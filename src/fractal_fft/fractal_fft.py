@@ -7,6 +7,11 @@ import numpy as np
 TWO_PI = 2 * np.pi
 
 
+def is_integer_matrix(x: Any) -> bool:
+    """Check whether a variable is an integer 2D matrix."""
+    return isinstance(x, np.ndarray) and len(x.shape) == 2 and x.dtype == np.int32
+
+
 def normalize(x: np.ndarray) -> np.ndarray:
     """Normalize a matrix by subtracting first column from all columns."""
     return x - x[:, 0]  # type: ignore
@@ -53,12 +58,6 @@ class FractalFFT:
     @staticmethod
     def _validate(Ainv: np.ndarray, b: np.ndarray, c: np.ndarray) -> None:
         """Check that Ainv, B, C are valid matrices."""
-
-        def is_integer_matrix(x: Any) -> bool:
-            return (
-                isinstance(x, np.ndarray) and len(x.shape) == 2 and x.dtype == np.int32
-            )
-
         if not (
             is_integer_matrix(Ainv) and is_integer_matrix(b) and is_integer_matrix(c)
         ):
